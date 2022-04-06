@@ -2,20 +2,43 @@ import winsound
 from time import sleep
 import urllib.request
 from datetime import datetime
+import re
+
+def is_enabled(data):
+    if "no habilitado" in data:
+        return [False, "Not enabled school"]
+    else:
+        pattern = re.compile(r'<td>.+?</td>')
+        match = pattern.findall(data)[0]
+        temp = match.replace("<font color=red>", "").replace("</font>", "").replace("<td>", "").replace("</td>", "").replace(school, "").replace(" ", "").replace("<br>", "")
+        if temp == "":
+            return [True, "OK"]
+        else:
+            return [False, "There are some processes your school must do before you can enroll"]
+
 
 school = input("Enter the exact name of your school: ").lower()
 while True:
     TIME = 0
-    with urllib.request.urlopen('http://extranet.unsa.edu.pe/sisacad/matint22a1/acad_login.php') as response:
+    with urllib.request.urlopen('http://extranet.unsa.edu.pe/sisacad/visualiza_fechas_a.php') as response:
         html = response.read().decode('utf-8').lower()
+        # pattern = r"<td>.+?</td>"
+        pattern = r"<tr>.+?</tr>"
+        found = re.findall(pattern, str(html))
+        answer = [False, "School not found"]
+        for i in range(1, len(found)):
+            # print(found[i])
+            if school in found[i]:
+                answer = is_enabled(found[i])
+                break
         # print(html)
+
         now = datetime.now().strftime("%H:%M:%S")
-        if school in str(html):
+        print( '(' + now + ')' + ' ' + answer[1])
+
+        if answer[0]:
             TIME = 15
-            print( '(' + now + ')' +" Found it!")
             winsound.Beep(440, 2000)
         else:
             TIME = 60
-            print( '(' + now + ')' +" Nothing yet")
-            winsound.Beep(440, 100)
     sleep(TIME)
