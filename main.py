@@ -21,7 +21,7 @@ school = input("Enter the exact name of your school: ").lower()
 minutes = int(input("Enter the number of minutes between each query: "))
 while True:
     TIME = minutes*60 if minutes >= 5 else 300
-    with urllib.request.urlopen('http://extranet.unsa.edu.pe/sisacad/visualiza_fechas_a.php') as response:
+    with urllib.request.urlopen('http://extranet.unsa.edu.pe/sisacad/visualiza_fechas_b.php') as response:
         html = response.read().decode('utf-8').lower()
         # pattern = r"<td>.+?</td>"
         pattern = r"<tr>.+?</tr>"
@@ -38,6 +38,8 @@ while True:
         print( '(' + now + ')' + ' ' + answer[1])
 
         if answer[0]:
-            TIME = 20
+            TIME = 10
             winsound.Beep(440, 2000)
+        else: 
+            winsound.Beep(440, 100)
     sleep(TIME)
